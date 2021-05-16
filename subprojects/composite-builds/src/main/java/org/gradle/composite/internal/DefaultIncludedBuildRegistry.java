@@ -47,6 +47,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class DefaultIncludedBuildRegistry implements BuildStateRegistry, Stoppable {
     private final IncludedBuildFactory includedBuildFactory;
@@ -226,6 +227,13 @@ public class DefaultIncludedBuildRegistry implements BuildStateRegistry, Stoppab
             }
         }
         currentlyConfiguring.remove(buildToConfigure);
+    }
+
+    @Override
+    public void visitBuilds(Consumer<? super BuildState> visitor) {
+        for (BuildState buildState : buildsByIdentifier.values()) {
+            visitor.accept(buildState);
+        }
     }
 
     private void validateNameIsNotBuildSrc(String name, File dir) {
