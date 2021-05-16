@@ -40,7 +40,6 @@ public interface IncludedBuildState extends NestedBuildState, CompositeBuildPart
     SettingsInternal loadSettings();
 
     GradleInternal getConfiguredBuild();
-    void finishBuild(Consumer<? super Throwable> collector);
     void addTasks(Iterable<String> tasks);
     void execute(Iterable<String> tasks, Object listener);
 
