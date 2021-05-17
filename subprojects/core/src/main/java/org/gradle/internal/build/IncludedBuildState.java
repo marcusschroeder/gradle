@@ -24,7 +24,6 @@ import org.gradle.api.internal.GradleInternal;
 import org.gradle.api.internal.SettingsInternal;
 
 import java.io.File;
-import java.util.function.Consumer;
 
 /**
  * Encapsulates the identity and state of an included build. An included build is a nested build that participates in dependency resolution and task execution with the root build and other included builds in the build tree.

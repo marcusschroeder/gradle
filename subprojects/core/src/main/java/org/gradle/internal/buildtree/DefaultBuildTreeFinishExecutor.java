@@ -45,13 +45,14 @@ public class DefaultBuildTreeFinishExecutor implements BuildTreeFinishExecutor {
     @Override
     public void finishBuildTree(List<Throwable> failures, Consumer<? super Throwable> finishFailures) {
         List<Throwable> allFailures = new ArrayList<>(failures);
-        includedBuildControllers.finishPendingWork(throwable -> {
+        Consumer<Throwable> collector = throwable -> {
             allFailures.add(throwable);
             finishFailures.accept(throwable);
-        });
+        };
+        includedBuildControllers.finishPendingWork(collector);
         buildStateRegistry.visitBuilds(buildState -> {
             if (buildState instanceof NestedBuildState) {
-                ((NestedBuildState) buildState).finishBuild(finishFailures);
+                ((NestedBuildState) buildState).finishBuild(collector);
             }
         });
         RuntimeException reportableFailure = exceptionAnalyser.transform(allFailures);

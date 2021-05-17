@@ -29,7 +29,6 @@ import org.gradle.tooling.internal.gradle.DefaultProjectIdentifier;
 import org.gradle.tooling.provider.model.ToolingModelBuilder;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,6 @@ public class GradleBuildBuilder implements ToolingModelBuilder {
                     allBuilds.add(convert(buildState, all));
                 }
             });
-            allBuilds.sort(Comparator.comparing(build -> build.getBuildIdentifier().getRootDir().getPath()));
             model.addBuilds(allBuilds);
         }
 

@@ -108,7 +108,7 @@ public interface BuildStateRegistry {
     NestedRootBuild addNestedBuildTree(BuildDefinition buildDefinition, BuildState owner, @Nullable String buildName);
 
     /**
-     * Visits all registered builds.
+     * Visits all registered builds, ordered by {@link BuildState#getIdentityPath()}
      */
     void visitBuilds(Consumer<? super BuildState> visitor);
 

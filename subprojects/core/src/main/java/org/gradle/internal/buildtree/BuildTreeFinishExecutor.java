@@ -20,5 +20,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public interface BuildTreeFinishExecutor {
+    /**
+     * Finishes any work and runs any pending user clean up code such as build finished hooks.
+     * @param failures The failures to report to the build finished hooks.
+     * @param finishFailures Collects any failures that happen during finishing.
+     */
     void finishBuildTree(List<Throwable> failures, Consumer<? super Throwable> finishFailures);
 }

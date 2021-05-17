@@ -19,7 +19,7 @@ package org.gradle.initialization.buildsrc
 import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import org.gradle.integtests.fixtures.UnsupportedWithConfigurationCache
 
-class BuildSrcIntegrationTest extends AbstractIntegrationSpec {
+class BuildSrcEventsIntegrationTest extends AbstractIntegrationSpec {
     @UnsupportedWithConfigurationCache(because = "uses buildFinished")
     def "buildSrc build finished hook is executed prior to configuring root build"() {
         file("buildSrc/build.gradle") << """

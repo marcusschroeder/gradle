@@ -40,11 +40,14 @@ import org.gradle.util.Path;
 
 import java.io.File;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -231,7 +234,9 @@ public class DefaultIncludedBuildRegistry implements BuildStateRegistry, Stoppab
 
     @Override
     public void visitBuilds(Consumer<? super BuildState> visitor) {
-        for (BuildState buildState : buildsByIdentifier.values()) {
+        List<BuildState> ordered = new ArrayList<>(buildsByIdentifier.values());
+        ordered.sort(Comparator.comparing(BuildState::getIdentityPath));
+        for (BuildState buildState : ordered) {
             visitor.accept(buildState);
         }
     }
