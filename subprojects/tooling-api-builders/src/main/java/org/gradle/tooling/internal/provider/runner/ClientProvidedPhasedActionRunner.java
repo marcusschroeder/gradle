@@ -16,14 +16,10 @@
 
 package org.gradle.tooling.internal.provider.runner;
 
-import org.gradle.initialization.BuildCancellationToken;
 import org.gradle.initialization.BuildEventConsumer;
-import org.gradle.internal.build.BuildStateRegistry;
 import org.gradle.internal.buildtree.BuildActionRunner;
 import org.gradle.internal.buildtree.BuildTreeLifecycleController;
 import org.gradle.internal.invocation.BuildAction;
-import org.gradle.internal.operations.BuildOperationExecutor;
-import org.gradle.internal.resources.ProjectLeaseRegistry;
 import org.gradle.tooling.internal.protocol.InternalPhasedAction;
 import org.gradle.tooling.internal.protocol.PhasedActionResult;
 import org.gradle.tooling.internal.provider.PhasedBuildActionResult;
@@ -35,13 +31,10 @@ public class ClientProvidedPhasedActionRunner extends AbstractClientProvidedBuil
     private final PayloadSerializer payloadSerializer;
     private final BuildEventConsumer buildEventConsumer;
 
-    public ClientProvidedPhasedActionRunner(BuildCancellationToken buildCancellationToken,
-                                            BuildOperationExecutor buildOperationExecutor,
-                                            ProjectLeaseRegistry projectLeaseRegistry,
+    public ClientProvidedPhasedActionRunner(BuildControllerFactory buildControllerFactory,
                                             PayloadSerializer payloadSerializer,
-                                            BuildEventConsumer buildEventConsumer,
-                                            BuildStateRegistry buildStateRegistry) {
-        super(buildCancellationToken, buildOperationExecutor, projectLeaseRegistry, buildStateRegistry);
+                                            BuildEventConsumer buildEventConsumer) {
+        super(buildControllerFactory);
         this.payloadSerializer = payloadSerializer;
         this.buildEventConsumer = buildEventConsumer;
     }

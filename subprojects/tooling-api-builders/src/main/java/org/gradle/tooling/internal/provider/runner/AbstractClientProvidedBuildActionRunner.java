@@ -20,14 +20,10 @@ import org.gradle.api.initialization.IncludedBuild;
 import org.gradle.api.internal.GradleInternal;
 import org.gradle.api.invocation.Gradle;
 import org.gradle.execution.ProjectConfigurer;
-import org.gradle.initialization.BuildCancellationToken;
 import org.gradle.internal.InternalBuildAdapter;
-import org.gradle.internal.build.BuildStateRegistry;
 import org.gradle.internal.build.IncludedBuildState;
 import org.gradle.internal.buildtree.BuildActionRunner;
 import org.gradle.internal.buildtree.BuildTreeLifecycleController;
-import org.gradle.internal.operations.BuildOperationExecutor;
-import org.gradle.internal.resources.ProjectLeaseRegistry;
 import org.gradle.tooling.internal.protocol.InternalBuildActionFailureException;
 import org.gradle.tooling.internal.protocol.InternalBuildActionVersion2;
 import org.gradle.tooling.internal.protocol.PhasedActionResult;
@@ -38,26 +34,17 @@ import java.util.Set;
 import java.util.function.Function;
 
 public abstract class AbstractClientProvidedBuildActionRunner implements BuildActionRunner {
-    private final BuildCancellationToken buildCancellationToken;
-    private final BuildOperationExecutor buildOperationExecutor;
-    private final ProjectLeaseRegistry projectLeaseRegistry;
-    private final BuildStateRegistry buildStateRegistry;
+    private final BuildControllerFactory buildControllerFactory;
 
-    public AbstractClientProvidedBuildActionRunner(BuildCancellationToken buildCancellationToken,
-                                                   BuildOperationExecutor buildOperationExecutor,
-                                                   ProjectLeaseRegistry projectLeaseRegistry,
-                                                   BuildStateRegistry buildStateRegistry) {
-        this.buildCancellationToken = buildCancellationToken;
-        this.buildOperationExecutor = buildOperationExecutor;
-        this.projectLeaseRegistry = projectLeaseRegistry;
-        this.buildStateRegistry = buildStateRegistry;
+    public AbstractClientProvidedBuildActionRunner(BuildControllerFactory buildControllerFactory) {
+        this.buildControllerFactory = buildControllerFactory;
     }
 
     protected Result runClientAction(ClientAction action, BuildTreeLifecycleController buildController) {
 
         GradleInternal gradle = buildController.getGradle();
 
-        ActionRunningListener listener = new ActionRunningListener(action, buildCancellationToken, buildOperationExecutor, projectLeaseRegistry);
+        ActionRunningListener listener = new ActionRunningListener(action);
 
         try {
             gradle.addBuildListener(listener);
@@ -101,16 +88,10 @@ public abstract class AbstractClientProvidedBuildActionRunner implements BuildAc
 
     private class ActionRunningListener extends InternalBuildAdapter implements Function<GradleInternal, Object> {
         private final ClientAction clientAction;
-        private final BuildCancellationToken buildCancellationToken;
-        private final BuildOperationExecutor buildOperationExecutor;
-        private final ProjectLeaseRegistry projectLeaseRegistry;
         RuntimeException actionFailure;
 
-        ActionRunningListener(ClientAction clientAction, BuildCancellationToken buildCancellationToken, BuildOperationExecutor buildOperationExecutor, ProjectLeaseRegistry projectLeaseRegistry) {
+        ActionRunningListener(ClientAction clientAction) {
             this.clientAction = clientAction;
-            this.buildCancellationToken = buildCancellationToken;
-            this.buildOperationExecutor = buildOperationExecutor;
-            this.projectLeaseRegistry = projectLeaseRegistry;
         }
 
         @Override
@@ -131,7 +112,7 @@ public abstract class AbstractClientProvidedBuildActionRunner implements BuildAc
             if (action == null || actionFailure != null) {
                 return;
             }
-            DefaultBuildController internalBuildController = new DefaultBuildController(gradle, buildCancellationToken, buildOperationExecutor, projectLeaseRegistry, buildStateRegistry);
+            DefaultBuildController internalBuildController = buildControllerFactory.controllerFor(gradle);
             try {
                 Object result;
                 if (action instanceof InternalBuildActionVersion2<?>) {

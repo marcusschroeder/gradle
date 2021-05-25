@@ -178,9 +178,7 @@ class DefaultBuildController implements org.gradle.tooling.internal.protocol.Int
     private GradleInternal findBuild(GradleBuildIdentity buildIdentity) {
         AtomicReference<GradleInternal> match = new AtomicReference<>();
         buildStateRegistry.visitBuilds(buildState -> {
-            System.out.println("-> checking " + buildState.getIdentityPath() + " dir=" + buildState.getBuildRootDir());
             if (buildState.isImportableBuild() && buildState.getBuildRootDir().equals(buildIdentity.getRootDir())) {
-                System.out.println("-> is a match");
                 match.set(buildState.getMutableModel());
             }
         });
