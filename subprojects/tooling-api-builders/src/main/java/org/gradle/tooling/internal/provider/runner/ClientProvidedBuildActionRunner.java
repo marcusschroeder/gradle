@@ -17,6 +17,7 @@
 package org.gradle.tooling.internal.provider.runner;
 
 import org.gradle.initialization.BuildCancellationToken;
+import org.gradle.internal.build.BuildStateRegistry;
 import org.gradle.internal.buildtree.BuildActionRunner;
 import org.gradle.internal.buildtree.BuildTreeLifecycleController;
 import org.gradle.internal.invocation.BuildAction;
@@ -29,8 +30,12 @@ import org.gradle.tooling.internal.provider.serialization.PayloadSerializer;
 public class ClientProvidedBuildActionRunner extends AbstractClientProvidedBuildActionRunner implements BuildActionRunner {
     private final PayloadSerializer payloadSerializer;
 
-    public ClientProvidedBuildActionRunner(BuildCancellationToken buildCancellationToken, BuildOperationExecutor buildOperationExecutor, ProjectLeaseRegistry projectLeaseRegistry, PayloadSerializer payloadSerializer) {
-        super(buildCancellationToken, buildOperationExecutor, projectLeaseRegistry);
+    public ClientProvidedBuildActionRunner(BuildCancellationToken buildCancellationToken,
+                                           BuildOperationExecutor buildOperationExecutor,
+                                           ProjectLeaseRegistry projectLeaseRegistry,
+                                           PayloadSerializer payloadSerializer,
+                                           BuildStateRegistry buildStateRegistry) {
+        super(buildCancellationToken, buildOperationExecutor, projectLeaseRegistry, buildStateRegistry);
         this.payloadSerializer = payloadSerializer;
     }
 

@@ -22,6 +22,7 @@ import org.gradle.api.invocation.Gradle;
 import org.gradle.execution.ProjectConfigurer;
 import org.gradle.initialization.BuildCancellationToken;
 import org.gradle.internal.InternalBuildAdapter;
+import org.gradle.internal.build.BuildStateRegistry;
 import org.gradle.internal.build.IncludedBuildState;
 import org.gradle.internal.buildtree.BuildActionRunner;
 import org.gradle.internal.buildtree.BuildTreeLifecycleController;
@@ -40,11 +41,16 @@ public abstract class AbstractClientProvidedBuildActionRunner implements BuildAc
     private final BuildCancellationToken buildCancellationToken;
     private final BuildOperationExecutor buildOperationExecutor;
     private final ProjectLeaseRegistry projectLeaseRegistry;
+    private final BuildStateRegistry buildStateRegistry;
 
-    public AbstractClientProvidedBuildActionRunner(BuildCancellationToken buildCancellationToken, BuildOperationExecutor buildOperationExecutor, ProjectLeaseRegistry projectLeaseRegistry) {
+    public AbstractClientProvidedBuildActionRunner(BuildCancellationToken buildCancellationToken,
+                                                   BuildOperationExecutor buildOperationExecutor,
+                                                   ProjectLeaseRegistry projectLeaseRegistry,
+                                                   BuildStateRegistry buildStateRegistry) {
         this.buildCancellationToken = buildCancellationToken;
         this.buildOperationExecutor = buildOperationExecutor;
         this.projectLeaseRegistry = projectLeaseRegistry;
+        this.buildStateRegistry = buildStateRegistry;
     }
 
     protected Result runClientAction(ClientAction action, BuildTreeLifecycleController buildController) {
@@ -125,7 +131,7 @@ public abstract class AbstractClientProvidedBuildActionRunner implements BuildAc
             if (action == null || actionFailure != null) {
                 return;
             }
-            DefaultBuildController internalBuildController = new DefaultBuildController(gradle, buildCancellationToken, buildOperationExecutor, projectLeaseRegistry);
+            DefaultBuildController internalBuildController = new DefaultBuildController(gradle, buildCancellationToken, buildOperationExecutor, projectLeaseRegistry, buildStateRegistry);
             try {
                 Object result;
                 if (action instanceof InternalBuildActionVersion2<?>) {
